@@ -1,6 +1,6 @@
 # Ahh! (A Helping Hand)
 
-A Windows desktop teaching agent that shows a cherry blossom plant character on screen. Users click the plant to give voice commands, and the app uses real browser automation with teaching overlays to complete tasks while explaining every step.
+A Windows desktop teaching agent that shows a helping hand character on screen. Users click the hand to give voice commands, and the app uses real browser automation with teaching overlays to complete tasks while explaining every step.
 
 ## Setup (Windows 10/11)
 
@@ -45,11 +45,11 @@ python main.py
 
 ## How It Works
 
-1. **Cherry blossom plant** appears on screen (bottom-right). Drag it anywhere.
-2. **Click the plant** to start voice recording. Click again to stop and process.
+1. **Helping hand** appears on screen (bottom-right). Drag it anywhere.
+2. **Click the hand** to start voice recording. Click again to stop and process.
 3. If voice fails, a **text input box** appears as fallback.
 4. The app calls Claude to **plan** the task as browser steps.
-5. If clarification is needed, **bubble options** appear near the plant.
+5. If clarification is needed, **bubble options** appear near the hand.
 6. A Playwright browser opens and the app **mirrors actions with the real OS cursor**.
 7. **Teaching overlays** show: cursor halo, trail, click pulses, element highlights, arrows, and captions.
 8. **Step stack** panel shows progress through the plan.
@@ -60,7 +60,7 @@ python main.py
 ```
 /ahh
   /ui            - PySide6 overlay components
-    plant_widget.py    - Draggable cherry blossom
+    hand_widget.py     - Draggable helping hand
     overlay_window.py  - Main transparent overlay
     step_stack.py      - Plan steps panel
     bubbles.py         - Clarification bubbles
@@ -78,7 +78,7 @@ python main.py
     browser_driver.py  - Playwright Chromium driver
     cursor_executor.py - OS cursor mirroring
   /assets
-    cherry_blossom.svg - Plant character asset
+    hand.svg           - Hand character asset
 main.py          - Application entrypoint
 requirements.txt - Python dependencies
 ```

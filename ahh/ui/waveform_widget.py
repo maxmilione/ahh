@@ -8,7 +8,7 @@ from PySide6.QtGui import QPainter, QColor
 
 
 class WaveformWidget(QWidget):
-    """Shows audio waveform bars below the plant widget.
+    """Shows audio waveform bars below the hand widget.
 
     Two modes:
     - listening: baby blue bars react to real-time mic amplitude

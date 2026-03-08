@@ -1,17 +1,17 @@
-"""Plant widget - waving hand with pointing mode for plan execution."""
+"""Hand widget - waving hand with pointing mode for plan execution."""
 import os
 from PySide6.QtWidgets import QWidget, QLabel
 from PySide6.QtCore import Qt, Signal, QSize, QTimer
 from PySide6.QtGui import QColor, QMovie, QPainter, QPixmap
 
 
-class PlantWidget(QWidget):
+class HandWidget(QWidget):
     """Waving hand widget that plays an animated GIF.
 
     Modes:
     - Default: Static first frame of waving hand
     - Hover: Plays wave GIF twice
-    - Listening: Plays wave GIF + red dot
+    - Listening: Plays wave GIF + indicator dot
     - Pointing: Plays transition GIF (open->point), freezes on last frame, rotates toward target
     """
 

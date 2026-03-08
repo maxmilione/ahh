@@ -5,7 +5,7 @@
 1. Environment variables set (`ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`)
 2. `playwright install chromium` completed
 3. App launched: `python main.py`
-4. Cherry blossom plant visible on screen
+4. Helping hand visible on screen
 
 ---
 
@@ -15,8 +15,8 @@
 > "Help me find the DMV change of address form"
 
 ### What Should Happen
-1. Plant shows "Listening..." with pink pulse while recording
-2. After clicking plant again (stop recording), it shows the transcribed text
+1. Hand shows "Listening..." with pulse while recording
+2. After clicking hand again (stop recording), it shows the transcribed text
 3. Claude plans ~4-5 steps
 4. Step stack appears on the right side showing the plan
 5. Browser opens (Chromium)
@@ -32,7 +32,7 @@
 
 ### Backup Plan
 If voice doesn't work:
-- Click the plant, it will show text input bar
+- Click the hand, it will show text input bar
 - Type: "Help me find the DMV change of address form"
 - Same flow continues
 
@@ -70,14 +70,14 @@ If voice doesn't work:
 ## Controls During Demo
 
 - **ESC** - Emergency stop, halts everything
-- **STOP button** (red, top-right) - Same as ESC
-- **Drag plant** - Move it out of the way if needed
+- **STOP button** (top-right) - Same as ESC
+- **Drag hand** - Move it out of the way if needed
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
-| Plant doesn't appear | Check PySide6 installed, try `pip install PySide6` |
+| Hand doesn't appear | Check PySide6 installed, try `pip install PySide6` |
 | No sound recording | Install PyAudio: `pip install pyaudio`. If fails, use text input |
 | "Planning failed" | Check ANTHROPIC_API_KEY is set correctly |
 | Browser doesn't open | Run `playwright install chromium` |

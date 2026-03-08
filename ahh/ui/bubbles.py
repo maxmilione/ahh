@@ -1,4 +1,4 @@
-"""Clarify bubbles - clean option bubbles near the plant."""
+"""Clarify bubbles - clean option bubbles near the hand."""
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                                 QPushButton)
 from PySide6.QtCore import Qt, Signal, QRectF

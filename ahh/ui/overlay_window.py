@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
 from PySide6.QtCore import Qt, QRect, Signal, QPoint, QTimer, QPropertyAnimation, QEasingCurve
 from PySide6.QtGui import QFont, QColor, QPainter, QPainterPath, QScreen, QShortcut, QKeySequence
 
-from .plant_widget import PlantWidget
+from .hand_widget import HandWidget
 from .waveform_widget import WaveformWidget
 from .step_stack import StepStack
 from .bubbles import ClarifyBubbles
@@ -69,11 +69,11 @@ class VisualOverlay(QMainWindow):
             pass
 
 
-class PlantWindow(QMainWindow):
-    """Small always-on-top window that holds the plant widget."""
+class HandWindow(QMainWindow):
+    """Small always-on-top window that holds the hand widget."""
 
-    plant_clicked = Signal()
-    plant_double_clicked = Signal()
+    hand_clicked = Signal()
+    hand_double_clicked = Signal()
 
     def __init__(self):
         super().__init__()
@@ -91,10 +91,10 @@ class PlantWindow(QMainWindow):
         self._home_pos = QPoint(geom.width() - 160, geom.height() - 245)
         self.move(self._home_pos)
 
-        self.plant = PlantWidget(self)
-        self.plant.move(0, 0)
+        self.hand = HandWidget(self)
+        self.hand.move(0, 0)
 
-        # Waveform below plant
+        # Waveform below hand
         self.waveform = WaveformWidget(self)
         self.waveform.move(10, 125)
 
@@ -117,7 +117,7 @@ class PlantWindow(QMainWindow):
         self._click_timer.timeout.connect(self._emit_single_click)
 
     def _emit_single_click(self):
-        self.plant_clicked.emit()
+        self.hand_clicked.emit()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -144,13 +144,13 @@ class PlantWindow(QMainWindow):
     def mouseDoubleClickEvent(self, event):
         if event.button() == Qt.LeftButton:
             self._click_timer.stop()  # Cancel pending single click
-            self.plant_double_clicked.emit()
+            self.hand_double_clicked.emit()
 
     def enterEvent(self, event):
-        self.plant.start_hover_wave()
+        self.hand.start_hover_wave()
 
     def leaveEvent(self, event):
-        self.plant.stop_hover_wave()
+        self.hand.stop_hover_wave()
 
     # The finger's natural direction at 0° rotation, measured from the
     # widget center (60,60) to the fingertip (~31,9) in screen coords.
@@ -207,7 +207,7 @@ class PlantWindow(QMainWindow):
         rotation = desired_angle - self._FINGER_NATURAL_ANGLE
 
         dest = QPoint(dest_x, dest_y)
-        self.plant.set_pointing(True, rotation)
+        self.hand.set_pointing(True, rotation)
 
         if entering:
             # First move into pointing mode: teleport instantly so the
@@ -228,7 +228,7 @@ class PlantWindow(QMainWindow):
     def return_home(self, duration_ms: int = 400):
         """Return hand to its home position and exit pointing mode."""
         self._is_pointing = False
-        self.plant.set_pointing(False)
+        self.hand.set_pointing(False)
         self.waveform.show()
 
         self._move_anim.stop()
@@ -245,10 +245,10 @@ class SpeechBubbleWindow(QMainWindow):
     TAIL_SIZE = 12
     SHADOW_M = 10  # margin for shadow rendering
 
-    def __init__(self, plant_win: PlantWindow):
+    def __init__(self, hand_win: HandWindow):
         super().__init__()
-        self._plant_win = plant_win
-        self._tail_below = True  # True = tail on bottom (bubble above plant)
+        self._hand_win = hand_win
+        self._tail_below = True  # True = tail on bottom (bubble above hand)
         self.setWindowFlags(
             Qt.FramelessWindowHint |
             Qt.WindowStaysOnTopHint |
@@ -287,16 +287,16 @@ class SpeechBubbleWindow(QMainWindow):
         win_h = lh + self.TAIL_SIZE + m * 2
         self.setFixedSize(win_w, win_h)
 
-        plant_pos = self._plant_win.pos()
-        x = plant_pos.x() + self._plant_win.width() - win_w + m - 5
+        hand_pos = self._hand_win.pos()
+        x = hand_pos.x() + self._hand_win.width() - win_w + m - 5
 
-        # If bubble would go above the screen, show below the plant instead
-        y_above = plant_pos.y() - win_h + m + 2
+        # If bubble would go above the screen, show below the hand instead
+        y_above = hand_pos.y() - win_h + m + 2
         if y_above < 0:
-            self._tail_below = False  # tail points up (bubble is below plant)
-            y = plant_pos.y() + self._plant_win.height() - m - 2
+            self._tail_below = False  # tail points up (bubble is below hand)
+            y = hand_pos.y() + self._hand_win.height() - m - 2
         else:
-            self._tail_below = True   # tail points down (bubble is above plant)
+            self._tail_below = True   # tail points down (bubble is above hand)
             y = y_above
         self.move(x, y)
 
@@ -516,7 +516,7 @@ class InteractivePopup(QMainWindow):
         central.setAttribute(Qt.WA_TranslucentBackground)
         self.setCentralWidget(central)
 
-        # Clarify bubbles (near plant, left of it)
+        # Clarify bubbles (near hand, left of it)
         self.bubbles = ClarifyBubbles(central)
         self.bubbles.move(geom.width() - 540, geom.height() - 450)
 
@@ -551,8 +551,8 @@ class OverlayWindow:
         # Visual layer (click-through, always visible)
         self._visual = VisualOverlay()
 
-        # Plant window (always visible, draggable, clickable)
-        self._plant_win = PlantWindow()
+        # Hand window (always visible, draggable, clickable)
+        self._hand_win = HandWindow()
 
         # Step stack (click-through, view only)
         self._step_win = StepStackWindow()
@@ -560,8 +560,8 @@ class OverlayWindow:
         # Stop button (small clickable window)
         self._stop_win = StopButtonWindow()
 
-        # Speech bubble (floats above plant)
-        self._speech_win = SpeechBubbleWindow(self._plant_win)
+        # Speech bubble (floats above hand)
+        self._speech_win = SpeechBubbleWindow(self._hand_win)
 
         # Interactive popup (shown only when bubbles/modal/text needed)
         self._popup = InteractivePopup()
@@ -569,24 +569,24 @@ class OverlayWindow:
         # Expose components for external access
         self.cursor_overlay = self._visual.cursor_overlay
         self.caption = self._visual.caption
-        self.plant = self._plant_win.plant
-        self.waveform = self._plant_win.waveform
+        self.hand = self._hand_win.hand
+        self.waveform = self._hand_win.waveform
         self.step_stack = self._step_win.step_stack
         self.bubbles = self._popup.bubbles
         self.text_input = self._popup.text_input
         self.confirm_modal = self._popup.confirm_modal
 
         # Signals
-        self.plant_clicked = self._plant_win.plant_clicked
-        self.plant_double_clicked = self._plant_win.plant_double_clicked
+        self.hand_clicked = self._hand_win.hand_clicked
+        self.hand_double_clicked = self._hand_win.hand_double_clicked
         self.stop_requested = self._stop_win.stop_btn.clicked
 
-        # ESC shortcut (via plant window which is always visible)
-        self._esc_shortcut = QShortcut(QKeySequence(Qt.Key_Escape), self._plant_win)
+        # ESC shortcut (via hand window which is always visible)
+        self._esc_shortcut = QShortcut(QKeySequence(Qt.Key_Escape), self._hand_win)
 
     def show(self):
         self._visual.show()
-        self._plant_win.show()
+        self._hand_win.show()
 
     def show_stop_button(self):
         self._stop_win.show()
@@ -627,11 +627,11 @@ class OverlayWindow:
 
     def point_hand_at(self, target: QPoint):
         """Move the hand to point at a screen target."""
-        self._plant_win.point_at(target)
+        self._hand_win.point_at(target)
 
     def return_hand_home(self):
         """Return the hand to its home position."""
-        self._plant_win.return_home()
+        self._hand_win.return_home()
 
     @property
     def esc_shortcut(self):

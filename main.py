@@ -1,7 +1,7 @@
 """
 Ahh! (A Helping Hand) - Main Entrypoint
 ========================================
-A Windows desktop teaching agent that shows a cherry blossom plant character,
+A Windows desktop teaching agent that shows a helping hand character,
 takes voice/text input, plans browser tasks, and teaches users by showing
 real cursor movements with visual overlays.
 """
@@ -104,11 +104,11 @@ class AhhApp:
         self._connect_signals()
 
     def _connect_signals(self):
-        # Plant click -> toggle recording
-        self.overlay.plant_clicked.connect(self._on_plant_click)
+        # Hand click -> toggle recording
+        self.overlay.hand_clicked.connect(self._on_hand_click)
 
-        # Plant double-click -> text input
-        self.overlay.plant_double_clicked.connect(self._on_plant_double_click)
+        # Hand double-click -> text input
+        self.overlay.hand_double_clicked.connect(self._on_hand_double_click)
 
         # Stop button / ESC
         self.overlay.stop_requested.connect(self._on_stop)
@@ -156,8 +156,8 @@ class AhhApp:
 
     # --- Recording ---
 
-    def _on_plant_click(self):
-        log.info("Plant clicked")
+    def _on_hand_click(self):
+        log.info("Hand clicked")
         if self._executing:
             return  # Don't interrupt execution
 
@@ -166,9 +166,9 @@ class AhhApp:
         else:
             self._start_recording()
 
-    def _on_plant_double_click(self):
+    def _on_hand_double_click(self):
         """Double-click opens text input instead of voice."""
-        log.info("Plant double-clicked")
+        log.info("Hand double-clicked")
         if self._executing:
             return
         if self._recording:
@@ -177,21 +177,21 @@ class AhhApp:
 
     def _start_recording(self):
         self._recording = True
-        self.overlay.plant.set_listening(True)
+        self.overlay.hand.set_listening(True)
         self.overlay.waveform.start_listening()
         try:
             self.recorder.start()
         except RuntimeError:
             # Audio not available, show text input
             self._recording = False
-            self.overlay.plant.set_listening(False)
+            self.overlay.hand.set_listening(False)
             self.overlay.waveform.stop()
             self.overlay.caption.show_caption("No mic found. Type below.", icon="wait", duration_ms=3000)
             self.overlay.show_text_input()
 
     def _stop_recording(self):
         self._recording = False
-        self.overlay.plant.set_listening(False)
+        self.overlay.hand.set_listening(False)
         self.overlay.waveform.stop()
         self.overlay.caption.show_caption("Processing...", icon="wait", duration_ms=10000)
 
@@ -208,7 +208,7 @@ class AhhApp:
     def _stop_recording_silent(self):
         """Stop recording without processing (for switching to text input)."""
         self._recording = False
-        self.overlay.plant.set_listening(False)
+        self.overlay.hand.set_listening(False)
         self.overlay.waveform.stop()
         self.recorder.stop()  # discard audio
 
@@ -617,7 +617,7 @@ class AhhApp:
         self._stopped = True
         self._executing = False
         self._recording = False
-        self.overlay.plant.set_listening(False)
+        self.overlay.hand.set_listening(False)
         self.overlay.waveform.stop()
         self.overlay.hide_speech_bubble()
         self.cursor.stop()
