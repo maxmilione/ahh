@@ -9,6 +9,8 @@ from PySide6.QtCore import Qt, QTimer, QPoint, QRectF, QPointF
 from PySide6.QtGui import (QPainter, QColor, QPen, QRadialGradient,
                             QFont, QPainterPath)
 
+from ahh.ui.theme import T
+
 
 class CursorOverlay(QWidget):
     """Full-screen transparent overlay for cursor effects."""
@@ -118,9 +120,9 @@ class CursorOverlay(QWidget):
     def _draw_halo(self, painter: QPainter):
         center = self._cursor_pos
         gradient = QRadialGradient(QPointF(center), 24)
-        gradient.setColorAt(0, QColor(180, 216, 232, 50))
-        gradient.setColorAt(0.6, QColor(180, 216, 232, 15))
-        gradient.setColorAt(1.0, QColor(180, 216, 232, 0))
+        gradient.setColorAt(0, QColor(123, 184, 212, 50))
+        gradient.setColorAt(0.6, QColor(123, 184, 212, 15))
+        gradient.setColorAt(1.0, QColor(123, 184, 212, 0))
         painter.setBrush(gradient)
         painter.setPen(Qt.NoPen)
         painter.drawEllipse(center, 24, 24)
@@ -129,9 +131,9 @@ class CursorOverlay(QWidget):
         points = list(self._trail)
         for i in range(1, len(points)):
             age = now - points[i][1]
-            alpha = max(0, int(60 * (1.0 - age / 0.8)))
+            alpha = max(0, int(55 * (1.0 - age / 0.8)))
             width = max(1, 3 * (1.0 - age / 0.8))
-            pen = QPen(QColor(200, 228, 240, alpha), width)
+            pen = QPen(QColor(123, 184, 212, alpha), width)
             pen.setCapStyle(Qt.RoundCap)
             painter.setPen(pen)
             painter.drawLine(points[i - 1][0], points[i][0])
@@ -140,43 +142,43 @@ class CursorOverlay(QWidget):
         elapsed = now - pulse["start_time"]
         progress = min(1.0, elapsed / 0.5)
         radius = 8 + 30 * progress
-        alpha = int(120 * (1.0 - progress))
+        alpha = int(110 * (1.0 - progress))
 
-        pen = QPen(QColor(240, 222, 176, alpha), 2)
+        pen = QPen(QColor(123, 184, 212, alpha), 2)
         painter.setPen(pen)
         painter.setBrush(Qt.NoBrush)
         painter.drawEllipse(pulse["pos"], int(radius), int(radius))
 
         if progress < 0.3:
-            inner_alpha = int(80 * (1.0 - progress / 0.3))
-            painter.setBrush(QColor(240, 222, 176, inner_alpha))
+            inner_alpha = int(70 * (1.0 - progress / 0.3))
+            painter.setBrush(QColor(123, 184, 212, inner_alpha))
             painter.setPen(Qt.NoPen)
             painter.drawEllipse(pulse["pos"], 5, 5)
 
     def _draw_highlight(self, painter: QPainter):
         rect = self._highlight_rect
 
-        # Soft pastel border
-        pen = QPen(QColor(180, 216, 232, 120), 2)
+        # Soft blue accent border — rounded corners
+        pen = QPen(QColor(123, 184, 212, 120), 1.5)
         painter.setPen(pen)
-        painter.setBrush(QColor(180, 216, 232, 18))
-        painter.drawRoundedRect(rect, 6, 6)
+        painter.setBrush(QColor(123, 184, 212, 14))
+        painter.drawRoundedRect(rect, T.RADIUS_MD, T.RADIUS_MD)
 
         # Label
         if self._highlight_label:
-            painter.setFont(QFont("DM Sans", 10, QFont.Medium))
-            painter.setPen(QColor(255, 255, 255))
-            label_rect = QRectF(rect.left(), rect.top() - 26, rect.width(), 22)
+            painter.setFont(QFont(T.FONT_FAMILY, T.FONT_XS, QFont.Medium))
+            painter.setPen(QColor(T.TEXT_WHITE))
+            label_rect = QRectF(rect.left(), rect.top() - 28, rect.width(), 24)
             bg_path = QPainterPath()
-            bg_path.addRoundedRect(label_rect, 6, 6)
-            painter.fillPath(bg_path, QColor(100, 160, 190, 180))
+            bg_path.addRoundedRect(label_rect, T.RADIUS_MD, T.RADIUS_MD)
+            painter.fillPath(bg_path, QColor(87, 148, 176, 200))
             painter.drawText(label_rect, Qt.AlignCenter, self._highlight_label)
 
     def _draw_arrow(self, painter: QPainter):
         target = self._arrow_target
         start = QPoint(target.x() + 50, target.y() - 50)
 
-        pen = QPen(QColor(240, 222, 176, 160), 2)
+        pen = QPen(QColor(123, 184, 212, 170), 1.5)
         painter.setPen(pen)
         painter.drawLine(start, target)
 
@@ -197,15 +199,15 @@ class CursorOverlay(QWidget):
         path.lineTo(QPointF(p1))
         path.lineTo(QPointF(p2))
         path.closeSubpath()
-        painter.fillPath(path, QColor(240, 222, 176, 160))
+        painter.fillPath(path, QColor(123, 184, 212, 170))
 
         # Label
         if self._arrow_label:
-            painter.setFont(QFont("DM Sans", 10, QFont.Medium))
-            painter.setPen(QColor(255, 255, 255))
+            painter.setFont(QFont(T.FONT_FAMILY, T.FONT_XS, QFont.Medium))
+            painter.setPen(QColor(T.TEXT_WHITE))
             label_pos = QPointF(start.x() + 5, start.y() - 8)
-            bg_rect = QRectF(label_pos.x() - 4, label_pos.y() - 16, len(self._arrow_label) * 7 + 12, 22)
+            bg_rect = QRectF(label_pos.x() - 4, label_pos.y() - 16, len(self._arrow_label) * 7 + 12, 24)
             bg_path = QPainterPath()
-            bg_path.addRoundedRect(bg_rect, 6, 6)
-            painter.fillPath(bg_path, QColor(90, 80, 65, 180))
+            bg_path.addRoundedRect(bg_rect, T.RADIUS_MD, T.RADIUS_MD)
+            painter.fillPath(bg_path, QColor(87, 148, 176, 200))
             painter.drawText(bg_rect, Qt.AlignCenter, self._arrow_label)

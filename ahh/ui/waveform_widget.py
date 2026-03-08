@@ -4,18 +4,18 @@ import math
 import random
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QPainter, QColor
+from PySide6.QtGui import QPainter, QColor, QLinearGradient
 
 
 class WaveformWidget(QWidget):
     """Shows audio waveform bars below the hand widget.
 
     Two modes:
-    - listening: baby blue bars react to real-time mic amplitude
-    - speaking: warm amber bars animate a pulsing sine wave pattern
+    - listening: dark gray bars react to real-time mic amplitude
+    - speaking: lighter gray bars animate a pulsing sine wave pattern
     """
 
-    NUM_BARS = 9
+    NUM_BARS = 11
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -102,13 +102,18 @@ class WaveformWidget(QWidget):
             x = gap + i * (bar_width + gap)
             y = (h - bar_h) / 2
 
+            # Blue accent gradient per bar
             if self._mode == "listening":
-                color = QColor(160, 204, 224, 180)   # soft blue
+                grad = QLinearGradient(x, y, x, y + bar_h)
+                grad.setColorAt(0.0, QColor(123, 184, 212, 210))   # #7BB8D4
+                grad.setColorAt(1.0, QColor(150, 200, 222, 140))
             else:
-                color = QColor(240, 222, 176, 180)   # soft amber
+                grad = QLinearGradient(x, y, x, y + bar_h)
+                grad.setColorAt(0.0, QColor(105, 166, 194, 190))   # #69A6C2
+                grad.setColorAt(1.0, QColor(140, 195, 218, 130))
 
             painter.setPen(Qt.NoPen)
-            painter.setBrush(color)
+            painter.setBrush(grad)
             painter.drawRoundedRect(int(x), int(y), bar_width, int(bar_h), 999, 999)
 
         painter.end()

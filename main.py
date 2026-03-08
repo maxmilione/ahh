@@ -10,7 +10,10 @@ import os
 import asyncio
 import threading
 import logging
+import re
+from datetime import datetime
 from functools import partial
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Set up file logging for debugging (INFO level, only for ahh logger)
@@ -83,6 +86,7 @@ class AhhApp:
         self._recording = False
         self._executing = False
         self._current_request = ""
+        self._current_plan: PlanResponse | None = None
         self._stopped = False
         self._confirm_future: asyncio.Future | None = None
         self._confirm_result = False
@@ -276,6 +280,7 @@ class AhhApp:
             # Execute plan
             self._executing = True
             self._stopped = False
+            self._current_plan = plan
             self.cursor.reset()
             asyncio.run_coroutine_threadsafe(
                 self._execute_plan(plan), self._loop
@@ -553,8 +558,97 @@ class AhhApp:
         self.overlay.cursor_overlay.clear_highlight()
         self.overlay.return_hand_home()
         self.overlay.hide_stop_button()
+
+        # Save lesson summary before showing "All done!"
+        saved_path = self._save_lesson_summary()
+
         self.overlay.caption.show_caption("All done!", icon="navigate", duration_ms=3000)
         self.tts.speak_async("All done!")
+
+        if saved_path:
+            # Show "Lesson saved" caption after a short delay
+            QTimer.singleShot(3500, lambda: self.overlay.caption.show_caption(
+                "Lesson saved to Desktop!", icon="navigate", duration_ms=3000
+            ))
+
+    def _save_lesson_summary(self) -> str | None:
+        """Save a summary of the completed lesson to the Desktop."""
+        plan = self._current_plan
+        if not plan or not plan.steps:
+            return None
+
+        try:
+            # Create lessons folder on Desktop
+            desktop = Path.home() / "Desktop" / "AHH Lessons"
+            desktop.mkdir(parents=True, exist_ok=True)
+
+            # Generate filename from request + timestamp
+            now = datetime.now()
+            safe_name = re.sub(r'[<>:"/\\|?*]', '', self._current_request[:60]).strip()
+            if not safe_name:
+                safe_name = "lesson"
+            filename = f"{safe_name} - {now.strftime('%Y-%m-%d %H.%M')}.txt"
+            filepath = desktop / filename
+
+            # Build summary content
+            lines = []
+            lines.append(f"Lesson: {self._current_request}")
+            lines.append(f"Date: {now.strftime('%B %d, %Y at %I:%M %p')}")
+            lines.append("─" * 40)
+            lines.append("")
+
+            # Group actions by step
+            actions_by_step: dict[int, list] = {}
+            if plan.actions:
+                for action in plan.actions:
+                    actions_by_step.setdefault(action.step_id, []).append(action)
+
+            for step in plan.steps:
+                lines.append(f"Step {step.id}: {step.title}")
+                lines.append(f"  Explanation: {step.teach}")
+                lines.append("")
+
+                # Add action narrations for this step
+                step_actions = actions_by_step.get(step.id, [])
+                for action in step_actions:
+                    narration = getattr(action, 'narrate', '') or ''
+                    if narration:
+                        lines.append(f"  → {narration}")
+                    else:
+                        # Fall back to a description of the action
+                        desc = self._action_description(action)
+                        if desc:
+                            lines.append(f"  → {desc}")
+
+                lines.append("")
+
+            lines.append("─" * 40)
+            lines.append("Saved by AHH! (A Helping Hand)")
+
+            filepath.write_text("\n".join(lines), encoding="utf-8")
+            log.info(f"Lesson summary saved: {filepath}")
+            return str(filepath)
+
+        except Exception as e:
+            log.error(f"Failed to save lesson summary: {e}")
+            return None
+
+    def _action_description(self, action) -> str:
+        """Generate a short human-readable description of an action."""
+        params = action.params
+        if action.type == "navigate":
+            return f"Navigated to {params.get('url', '')}"
+        elif action.type == "click":
+            return f"Clicked {params.get('description', 'an element')}"
+        elif action.type == "type":
+            return f'Typed "{params.get("text", "")}"'
+        elif action.type == "scroll":
+            return f"Scrolled {params.get('direction', 'down')}"
+        elif action.type == "read":
+            return f"Read {params.get('purpose', 'content')}"
+        elif action.type == "wait":
+            return f"Waited {params.get('seconds', 1)} seconds"
+        return ""
 
     @Slot(str)
     def _on_execution_error(self, error: str):

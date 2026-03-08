@@ -1,11 +1,10 @@
 """Step stack panel - shows plan steps with active/completed status."""
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-                                QScrollArea, QFrame)
-from PySide6.QtCore import Qt, QRectF
+                                QScrollArea, QFrame, QGraphicsOpacityEffect)
+from PySide6.QtCore import Qt, QRectF, QPropertyAnimation, QEasingCurve
 from PySide6.QtGui import QFont, QColor, QPainter
 
-# Solid cream used everywhere to eliminate transparency
-_CREAM = "#FAF7EF"
+from ahh.ui.theme import T
 
 
 class StepBadge(QWidget):
@@ -16,21 +15,21 @@ class StepBadge(QWidget):
         self.setFixedSize(28, 28)
         self._number = number
         self._text = str(number)
-        self._bg_color = QColor("#EDE8DC")
-        self._text_color = QColor("#8A8070")
+        self._bg_color = QColor(T.BORDER)
+        self._text_color = QColor(T.TEXT_MUTED)
 
     def set_state(self, state: str):
         if state == "active":
-            self._bg_color = QColor("#D4E8F2")
-            self._text_color = QColor("#3A7A9C")
+            self._bg_color = QColor(T.ACCENT)
+            self._text_color = QColor(T.TEXT_WHITE)
             self._text = str(self._number)
         elif state == "completed":
-            self._bg_color = QColor("#F0DEB0")
-            self._text_color = QColor("#7A5A10")
+            self._bg_color = QColor(T.CHECK_BG)
+            self._text_color = QColor(T.CHECK_TEXT)
             self._text = "\u2713"
         else:
-            self._bg_color = QColor("#EDE8DC")
-            self._text_color = QColor("#8A8070")
+            self._bg_color = QColor(T.BORDER)
+            self._text_color = QColor(T.TEXT_MUTED)
             self._text = str(self._number)
         self.update()
 
@@ -41,7 +40,7 @@ class StepBadge(QWidget):
         painter.setBrush(self._bg_color)
         painter.drawEllipse(1, 1, 26, 26)
         painter.setPen(self._text_color)
-        painter.setFont(QFont("DM Sans", 11, QFont.Bold))
+        painter.setFont(QFont(T.FONT_FAMILY, T.FONT_SM, QFont.Bold))
         painter.drawText(self.rect(), Qt.AlignCenter, self._text)
         painter.end()
 
@@ -58,137 +57,163 @@ class StepItem(QFrame):
         self.setStyleSheet(self._style_for_status())
 
         main_layout = QHBoxLayout(self)
-        main_layout.setContentsMargins(10, 10, 12, 10)
-        main_layout.setSpacing(10)
+        main_layout.setContentsMargins(T.SP_3, T.SP_3, T.SP_3, T.SP_3)
+        main_layout.setSpacing(T.SP_3)
 
-        # Badge
         self._badge = StepBadge(step_id, self)
         main_layout.addWidget(self._badge, 0, Qt.AlignTop)
 
-        # Text column
         text_col = QVBoxLayout()
-        text_col.setSpacing(3)
-        text_col.setContentsMargins(0, 0, 0, 0)
+        text_col.setSpacing(T.SP_1)
+        text_col.setContentsMargins(0, 2, 0, 0)
 
         self._title_label = QLabel(title)
-        self._title_label.setFont(QFont("DM Sans", 13, QFont.Bold))
+        self._title_label.setFont(QFont(T.FONT_HEADING, T.FONT_LG))
         self._title_label.setWordWrap(True)
-        self._title_label.setStyleSheet(f"color: #4A4540; background: {_CREAM};")
+        self._title_label.setStyleSheet(f"color: {T.TEXT_BODY}; background: transparent;")
         text_col.addWidget(self._title_label)
 
         if teach:
             self._teach_label = QLabel(teach)
-            self._teach_label.setFont(QFont("DM Sans", 11, QFont.DemiBold))
+            self._teach_label.setFont(QFont(T.FONT_FAMILY, T.FONT_SM))
             self._teach_label.setWordWrap(True)
-            self._teach_label.setStyleSheet(f"color: #6A6460; background: {_CREAM};")
+            self._teach_label.setStyleSheet(f"color: {T.TEXT_SECONDARY}; background: transparent;")
             text_col.addWidget(self._teach_label)
         else:
             self._teach_label = None
 
         main_layout.addLayout(text_col, 1)
 
+        # Opacity effect for fade-in
+        self._opacity_fx = QGraphicsOpacityEffect(self)
+        self._opacity_fx.setOpacity(0.0)
+        self.setGraphicsEffect(self._opacity_fx)
+
+    def fade_in(self, delay_ms: int = 0):
+        anim = QPropertyAnimation(self._opacity_fx, b"opacity", self)
+        anim.setStartValue(0.0)
+        anim.setEndValue(1.0)
+        anim.setDuration(T.ANIM_SLOW)
+        anim.setEasingCurve(QEasingCurve.OutCubic)
+        if delay_ms:
+            from PySide6.QtCore import QTimer
+            QTimer.singleShot(delay_ms, anim.start)
+        else:
+            anim.start()
+        self._fade_anim = anim
+
     def set_status(self, status: str):
         self._status = status
         self._badge.set_state(status)
         self.setStyleSheet(self._style_for_status())
+
         if status == "completed":
             self._title_label.setStyleSheet(
-                f"color: #9A9488; text-decoration: line-through; background: {_CREAM};"
+                f"color: {T.TEXT_HINT}; text-decoration: line-through; background: transparent;"
             )
+            if self._teach_label:
+                self._teach_label.setStyleSheet(
+                    f"color: {T.TEXT_PLACEHOLDER}; background: transparent;"
+                )
         elif status == "active":
-            self._title_label.setStyleSheet("color: #1C1A18; background: #EEF5F9;")
+            self._title_label.setStyleSheet(
+                f"color: {T.TEXT_PRIMARY}; background: transparent;"
+            )
+            if self._teach_label:
+                self._teach_label.setStyleSheet(
+                    f"color: {T.TEXT_SECONDARY}; background: transparent;"
+                )
         else:
-            self._title_label.setStyleSheet(f"color: #4A4540; background: {_CREAM};")
+            self._title_label.setStyleSheet(
+                f"color: {T.TEXT_BODY}; background: transparent;"
+            )
+            if self._teach_label:
+                self._teach_label.setStyleSheet(
+                    f"color: {T.TEXT_SECONDARY}; background: transparent;"
+                )
 
     def _style_for_status(self) -> str:
         if self._status == "active":
             return f"""
                 StepItem {{
-                    background: #EEF5F9;
+                    background: {T.ACTIVE_BG};
                     border: none;
-                    border-radius: 10px;
+                    border-radius: {T.RADIUS_MD}px;
                 }}
             """
         return f"""
             StepItem {{
-                background: {_CREAM};
+                background: {T.WHITE};
                 border: none;
-                border-radius: 10px;
+                border-radius: {T.RADIUS_MD}px;
             }}
         """
 
 
 class StepStack(QWidget):
-    """Panel showing list of steps with status indicators."""
+    """Panel showing list of steps."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFixedWidth(320)
-
         self._items: list[StepItem] = []
 
         outer = QVBoxLayout(self)
-        outer.setContentsMargins(12, 12, 12, 12)
+        outer.setContentsMargins(T.SP_3, T.SP_3, T.SP_3, T.SP_3)
         outer.setSpacing(0)
 
-        # Header
         header = QLabel("  Plan")
-        header.setFont(QFont("DM Sans", 15, QFont.Bold))
-        header.setFixedHeight(40)
-        header.setStyleSheet(f"color: #2C2A25; background: {_CREAM};")
+        header.setFont(QFont(T.FONT_HEADING, T.FONT_XXL))
+        header.setFixedHeight(44)
+        header.setStyleSheet(f"color: {T.TEXT_PRIMARY}; background: {T.WHITE};")
         outer.addWidget(header)
 
-        # Scroll area for steps
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll.setStyleSheet(f"""
-            QScrollArea {{ background: {_CREAM}; border: none; }}
-            QWidget {{ background: {_CREAM}; }}
-            QScrollBar:vertical {{ width: 3px; background: {_CREAM}; }}
-            QScrollBar::handle:vertical {{ background: rgba(28,28,26,40); border-radius: 1px; }}
+            QScrollArea {{ background: {T.WHITE}; border: none; }}
+            QWidget {{ background: {T.WHITE}; }}
+            QScrollBar:vertical {{ width: 3px; background: {T.WHITE}; }}
+            QScrollBar::handle:vertical {{ background: rgba(0,0,0,25); border-radius: 1px; }}
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{ height: 0; }}
         """)
         outer.addWidget(scroll)
 
         self._container = QWidget()
         self._layout = QVBoxLayout(self._container)
-        self._layout.setContentsMargins(2, 4, 2, 4)
-        self._layout.setSpacing(4)
+        self._layout.setContentsMargins(2, T.SP_1, 2, T.SP_1)
+        self._layout.setSpacing(T.SP_1)
         self._layout.addStretch()
         scroll.setWidget(self._container)
 
     def paintEvent(self, event):
-        """Draw solid card background."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-
         rect = QRectF(4, 4, self.width() - 8, self.height() - 8)
 
-        # Single soft shadow
-        shadow_rect = rect.adjusted(-2, 0, 2, 4)
+        # Soft shadow
+        shadow = rect.adjusted(0, 1, 0, 3)
         painter.setPen(Qt.NoPen)
-        painter.setBrush(QColor(28, 28, 26, 12))
-        painter.drawRoundedRect(shadow_rect, 18, 18)
+        painter.setBrush(QColor(0, 0, 0, 8))
+        painter.drawRoundedRect(shadow, T.RADIUS_LG + 2, T.RADIUS_LG + 2)
 
-        # Card background - solid warm cream
-        painter.setBrush(QColor(_CREAM))
-        painter.setPen(QColor(237, 232, 220))
-        painter.drawRoundedRect(rect, 14, 14)
-
+        # Card
+        painter.setBrush(QColor(T.WHITE))
+        painter.setPen(QColor(T.BORDER))
+        painter.drawRoundedRect(rect, T.RADIUS_LG, T.RADIUS_LG)
         painter.end()
 
     def set_steps(self, steps: list[dict]):
-        """Set steps from plan. Each dict: {id, title, teach}."""
         for item in self._items:
             self._layout.removeWidget(item)
             item.deleteLater()
         self._items.clear()
-
-        for step in steps:
+        for i, step in enumerate(steps):
             item = StepItem(step["id"], step["title"], step.get("teach", ""))
             self._layout.insertWidget(self._layout.count() - 1, item)
             self._items.append(item)
+            item.fade_in(delay_ms=i * 80)
 
     def set_step_active(self, step_id: int):
         for item in self._items:

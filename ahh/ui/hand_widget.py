@@ -125,16 +125,16 @@ class HandWidget(QWidget):
             y = (self.height() - ph) / 2
             painter.drawPixmap(int(x), int(y), self._frozen_pixmap)
 
-        # Listening indicator dot (warm amber)
+        # Listening indicator dot (soft blue accent)
         if self._show_red_dot and self._dot_visible:
             painter.resetTransform()
             dot_x, dot_y = 98, 10
             dot_r = 6
             painter.setPen(Qt.NoPen)
-            painter.setBrush(QColor(240, 222, 176, 50))   # soft amber glow
+            painter.setBrush(QColor(123, 184, 212, 50))   # soft blue glow
             painter.drawEllipse(dot_x - dot_r - 3, dot_y - dot_r - 3,
                                 (dot_r + 3) * 2, (dot_r + 3) * 2)
-            painter.setBrush(QColor(240, 222, 176, 210))  # soft amber solid
+            painter.setBrush(QColor(123, 184, 212, 220))  # blue accent solid
             painter.drawEllipse(dot_x - dot_r, dot_y - dot_r,
                                 dot_r * 2, dot_r * 2)
 

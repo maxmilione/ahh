@@ -14,6 +14,7 @@ from .caption_strip import CaptionStrip
 from .confirm_modal import ConfirmModal
 from .cursor_overlay import CursorOverlay
 from .text_input import TextInputBar
+from .theme import T
 
 
 def make_click_through(hwnd: int):
@@ -263,13 +264,13 @@ class SpeechBubbleWindow(QMainWindow):
         self._label = QLabel(central)
         self._label.setWordWrap(True)
         self._label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self._label.setFont(QFont("DM Sans", 12))
-        self._label.setStyleSheet("""
-            QLabel {
+        self._label.setFont(QFont(T.FONT_FAMILY, T.FONT_MD))
+        self._label.setStyleSheet(f"""
+            QLabel {{
                 background: transparent;
-                padding: 12px 14px;
-                color: #3C3C3A;
-            }
+                padding: {T.SP_3}px {T.SP_4}px;
+                color: {T.TEXT_PRIMARY};
+            }}
         """)
         self._label.setMaximumWidth(self.BUBBLE_MAX_W)
 
@@ -332,16 +333,17 @@ class SpeechBubbleWindow(QMainWindow):
                                self.width() - 2 * m,
                                self.height() - 2 * m - tail_h)
 
-        # Single soft shadow
-        shadow_rect = card_rect.adjusted(-2, 0, 2, 4)
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(QColor(28, 28, 26, 10))
-        painter.drawRoundedRect(shadow_rect, 16, 16)
+        # Layered shadow
+        for dx, dy, spread, alpha in [(0, 1, 3, 8), (0, 3, 8, 5)]:
+            sr = card_rect.adjusted(-spread + dx, -spread + dy, spread + dx, spread + dy)
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(QColor(0, 0, 0, alpha))
+            painter.drawRoundedRect(sr, 18, 18)
 
         # Bubble body
-        painter.setBrush(QColor(252, 249, 242))
-        painter.setPen(QColor(237, 232, 220))
-        painter.drawRoundedRect(card_rect, 14, 14)
+        painter.setBrush(QColor(255, 255, 255))
+        painter.setPen(QColor(229, 229, 229))
+        painter.drawRoundedRect(card_rect, 16, 16)
 
         # Draw tail
         tail_x = card_rect.right() - 30
@@ -363,11 +365,11 @@ class SpeechBubbleWindow(QMainWindow):
             )
             path.closeSubpath()
             painter.setPen(Qt.NoPen)
-            painter.setBrush(QColor(252, 249, 242))
+            painter.setBrush(QColor(255, 255, 255))
             painter.drawPath(path)
 
             # Tail border
-            painter.setPen(QColor(237, 232, 220))
+            painter.setPen(QColor(229, 229, 229))
             painter.setBrush(Qt.NoBrush)
             border_path = QPainterPath()
             border_path.moveTo(tail_x, tail_top)
@@ -394,11 +396,11 @@ class SpeechBubbleWindow(QMainWindow):
             )
             path.closeSubpath()
             painter.setPen(Qt.NoPen)
-            painter.setBrush(QColor(252, 249, 242))
+            painter.setBrush(QColor(255, 255, 255))
             painter.drawPath(path)
 
             # Tail border
-            painter.setPen(QColor(237, 232, 220))
+            painter.setPen(QColor(229, 229, 229))
             painter.setBrush(Qt.NoBrush)
             border_path = QPainterPath()
             border_path.moveTo(tail_x, tail_bot)
@@ -470,24 +472,34 @@ class StopButtonWindow(QMainWindow):
 
         screen = QApplication.primaryScreen()
         geom = screen.geometry()
-        self.setFixedSize(90, 38)
-        self.move(geom.width() - 110, 12)
+        self.setFixedSize(100, 44)
+        self.move(geom.width() - 116, 12)
 
-        self.stop_btn = QPushButton("\u25a0 Stop", self)
-        self.stop_btn.setFont(QFont("DM Sans", 12, QFont.Medium))
-        self.stop_btn.setFixedSize(90, 38)
+        self.stop_btn = QPushButton("\u25a0  Stop", self)
+        self.stop_btn.setFont(QFont(T.FONT_FAMILY, T.FONT_MD, QFont.Medium))
+        self.stop_btn.setFixedSize(100, 44)
         self.stop_btn.move(0, 0)
         self.stop_btn.setCursor(Qt.PointingHandCursor)
-        self.stop_btn.setStyleSheet("""
-            QPushButton {
-                background: #E8A090;
-                border: none;
-                border-radius: 999px;
-                color: #FFFFFF;
-            }
-            QPushButton:hover {
-                background: #D97B6C;
-            }
+        self.stop_btn.setStyleSheet(f"""
+            QPushButton {{
+                background: {T.WHITE};
+                color: {T.TEXT_PRIMARY};
+                border: 1px solid {T.ACCENT};
+                border-radius: {T.RADIUS_LG}px;
+                padding: 8px 16px;
+                font-family: {T.FONT_FAMILY};
+                font-size: {T.FONT_MD}pt;
+                font-weight: 500;
+            }}
+            QPushButton:hover {{
+                background: {T.ACCENT_LIGHT};
+                border-color: {T.ACCENT_HOVER};
+                color: {T.ACCENT_PRESS};
+            }}
+            QPushButton:pressed {{
+                background: {T.ACCENT};
+                color: {T.TEXT_WHITE};
+            }}
         """)
 
         self.hide()
@@ -526,10 +538,10 @@ class InteractivePopup(QMainWindow):
         self.text_input.setFixedWidth(caption_w)
         self.text_input.move((geom.width() - caption_w) // 2, geom.height() - 140)
 
-        # Confirm modal (center, accounting for shadow margin)
+        # Confirm modal (center, using actual widget size)
         self.confirm_modal = ConfirmModal(central)
-        cm_w = 400 + self.confirm_modal.SHADOW_MARGIN * 2
-        cm_h = 180 + self.confirm_modal.SHADOW_MARGIN * 2
+        cm_w = self.confirm_modal.width()
+        cm_h = self.confirm_modal.height()
         self.confirm_modal.move(
             (geom.width() - cm_w) // 2,
             (geom.height() - cm_h) // 2
