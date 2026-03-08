@@ -14,6 +14,7 @@ class TextInputBar(QWidget):
 
     SHADOW_MARGIN = 6
     text_submitted = Signal(str)
+    closed = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -26,6 +27,27 @@ class TextInputBar(QWidget):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(m + T.SP_4, m + T.SP_2, m + T.SP_4, m + T.SP_2)
         layout.setSpacing(T.SP_3)
+
+        # --- Close button ---
+        self._close_btn = QPushButton("\u2715")
+        self._close_btn.setFixedSize(28, 28)
+        self._close_btn.setCursor(Qt.PointingHandCursor)
+        self._close_btn.setStyleSheet(f"""
+            QPushButton {{
+                background: transparent;
+                color: {T.TEXT_MUTED};
+                border: none;
+                border-radius: 14px;
+                font-size: 12px;
+                font-weight: bold;
+            }}
+            QPushButton:hover {{
+                background: {T.BG_HOVER};
+                color: {T.TEXT_PRIMARY};
+            }}
+        """)
+        self._close_btn.clicked.connect(self._on_close)
+        layout.addWidget(self._close_btn)
 
         # --- Text field ---
         self._input = QLineEdit()
@@ -118,6 +140,11 @@ class TextInputBar(QWidget):
             self.text_submitted.emit(text)
             self._input.clear()
             self.hide()
+
+    def _on_close(self):
+        self._input.clear()
+        self.hide()
+        self.closed.emit()
 
     def show_input(self):
         self._input.clear()

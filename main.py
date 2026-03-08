@@ -120,6 +120,7 @@ class AhhApp:
 
         # Text fallback
         self.overlay.text_input.text_submitted.connect(self._on_text_submitted)
+        self.overlay.text_input.closed.connect(lambda: self.overlay.set_interactive(False))
 
         # Bubble selection
         self.overlay.bubbles.option_selected.connect(self._on_bubble_selected)
