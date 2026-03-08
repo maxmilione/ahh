@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" width="200" height="260">
+  <!-- Pot -->
+  <ellipse cx="100" cy="245" rx="38" ry="8" fill="#8B5E3C"/>
+  <path d="M62 220 Q60 245 68 248 L132 248 Q140 245 138 220 Z" fill="#A0522D"/>
+  <path d="M62 220 Q60 215 68 212 L132 212 Q140 215 138 220 Z" fill="#B8743D"/>
+  <ellipse cx="100" cy="216" rx="38" ry="8" fill="#C4834A"/>
+  <!-- Soil -->
+  <ellipse cx="100" cy="216" rx="33" ry="5" fill="#5C3A1E"/>
+
+  <!-- Main trunk -->
+  <path d="M100 216 Q98 190 95 170 Q90 140 88 120 Q86 100 90 80" stroke="#6B3A2A" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <!-- Branch left -->
+  <path d="M92 140 Q75 125 60 115 Q50 108 42 100" stroke="#6B3A2A" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Branch right -->
+  <path d="M93 130 Q110 115 125 105 Q135 98 145 92" stroke="#6B3A2A" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Branch top-left -->
+  <path d="M90 100 Q78 85 65 72 Q58 65 50 60" stroke="#6B3A2A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Branch top-right -->
+  <path d="M90 90 Q105 75 120 65 Q130 58 140 55" stroke="#6B3A2A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Small branch -->
+  <path d="M90 80 Q88 65 85 50" stroke="#6B3A2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Cherry blossom flowers - cluster 1 (top) -->
+  <g transform="translate(85,45)" opacity="0.95">
+    <circle cx="0" cy="-6" r="5" fill="#FFB7C5"/>
+    <circle cx="5.7" cy="-1.8" r="5" fill="#FFB7C5"/>
+    <circle cx="3.5" cy="4.8" r="5" fill="#FFB7C5"/>
+    <circle cx="-3.5" cy="4.8" r="5" fill="#FFB7C5"/>
+    <circle cx="-5.7" cy="-1.8" r="5" fill="#FFB7C5"/>
+    <circle cx="0" cy="0" r="3" fill="#FFE4E9"/>
+    <circle cx="0" cy="0" r="1.5" fill="#FF69B4"/>
+  </g>
+
+  <!-- Flower cluster 2 (left branch end) -->
+  <g transform="translate(42,97)" opacity="0.95">
+    <circle cx="0" cy="-5.5" r="4.5" fill="#FFC1CC"/>
+    <circle cx="5.2" cy="-1.7" r="4.5" fill="#FFC1CC"/>
+    <circle cx="3.2" cy="4.4" r="4.5" fill="#FFC1CC"/>
+    <circle cx="-3.2" cy="4.4" r="4.5" fill="#FFC1CC"/>
+    <circle cx="-5.2" cy="-1.7" r="4.5" fill="#FFC1CC"/>
+    <circle cx="0" cy="0" r="2.8" fill="#FFE4E9"/>
+    <circle cx="0" cy="0" r="1.3" fill="#FF69B4"/>
+  </g>
+
+  <!-- Flower cluster 3 (right branch end) -->
+  <g transform="translate(145,89)" opacity="0.95">
+    <circle cx="0" cy="-5.5" r="4.5" fill="#FFB7C5"/>
+    <circle cx="5.2" cy="-1.7" r="4.5" fill="#FFB7C5"/>
+    <circle cx="3.2" cy="4.4" r="4.5" fill="#FFB7C5"/>
+    <circle cx="-3.2" cy="4.4" r="4.5" fill="#FFB7C5"/>
+    <circle cx="-5.2" cy="-1.7" r="4.5" fill="#FFB7C5"/>
+    <circle cx="0" cy="0" r="2.8" fill="#FFE4E9"/>
+    <circle cx="0" cy="0" r="1.3" fill="#FF69B4"/>
+  </g>
+
+  <!-- Flower cluster 4 (top-left branch) -->
+  <g transform="translate(48,57)" opacity="0.9">
+    <circle cx="0" cy="-5" r="4" fill="#FFC1CC"/>
+    <circle cx="4.7" cy="-1.5" r="4" fill="#FFC1CC"/>
+    <circle cx="2.9" cy="4" r="4" fill="#FFC1CC"/>
+    <circle cx="-2.9" cy="4" r="4" fill="#FFC1CC"/>
+    <circle cx="-4.7" cy="-1.5" r="4" fill="#FFC1CC"/>
+    <circle cx="0" cy="0" r="2.5" fill="#FFE4E9"/>
+    <circle cx="0" cy="0" r="1.2" fill="#FF69B4"/>
+  </g>
+
+  <!-- Flower cluster 5 (top-right branch) -->
+  <g transform="translate(140,52)" opacity="0.9">
+    <circle cx="0" cy="-5" r="4" fill="#FFB7C5"/>
+    <circle cx="4.7" cy="-1.5" r="4" fill="#FFB7C5"/>
+    <circle cx="2.9" cy="4" r="4" fill="#FFB7C5"/>
+    <circle cx="-2.9" cy="4" r="4" fill="#FFB7C5"/>
+    <circle cx="-4.7" cy="-1.5" r="4" fill="#FFB7C5"/>
+    <circle cx="0" cy="0" r="2.5" fill="#FFE4E9"/>
+    <circle cx="0" cy="0" r="1.2" fill="#FF69B4"/>
+  </g>
+
+  <!-- Flower on left branch mid -->
+  <g transform="translate(62,112)" opacity="0.85">
+    <circle cx="0" cy="-4.5" r="3.8" fill="#FFB7C5"/>
+    <circle cx="4.3" cy="-1.4" r="3.8" fill="#FFB7C5"/>
+    <circle cx="2.6" cy="3.6" r="3.8" fill="#FFB7C5"/>
+    <circle cx="-2.6" cy="3.6" r="3.8" fill="#FFB7C5"/>
+    <circle cx="-4.3" cy="-1.4" r="3.8" fill="#FFB7C5"/>
+    <circle cx="0" cy="0" r="2.3" fill="#FFE4E9"/>
+    <circle cx="0" cy="0" r="1.1" fill="#FF69B4"/>
+  </g>
+
+  <!-- Flower on right branch mid -->
+  <g transform="translate(125,102)" opacity="0.85">
+    <circle cx="0" cy="-4.5" r="3.8" fill="#FFC1CC"/>
+    <circle cx="4.3" cy="-1.4" r="3.8" fill="#FFC1CC"/>
+    <circle cx="2.6" cy="3.6" r="3.8" fill="#FFC1CC"/>
+    <circle cx="-2.6" cy="3.6" r="3.8" fill="#FFC1CC"/>
+    <circle cx="-4.3" cy="-1.4" r="3.8" fill="#FFC1CC"/>
+    <circle cx="0" cy="0" r="2.3" fill="#FFE4E9"/>
+    <circle cx="0" cy="0" r="1.1" fill="#FF69B4"/>
+  </g>
+
+  <!-- Flower on trunk -->
+  <g transform="translate(95,108)" opacity="0.85">
+    <circle cx="0" cy="-4" r="3.5" fill="#FFB7C5"/>
+    <circle cx="3.8" cy="-1.2" r="3.5" fill="#FFB7C5"/>
+    <circle cx="2.4" cy="3.2" r="3.5" fill="#FFB7C5"/>
+    <circle cx="-2.4" cy="3.2" r="3.5" fill="#FFB7C5"/>
+    <circle cx="-3.8" cy="-1.2" r="3.5" fill="#FFB7C5"/>
+    <circle cx="0" cy="0" r="2" fill="#FFE4E9"/>
+    <circle cx="0" cy="0" r="1" fill="#FF69B4"/>
+  </g>
+
+  <!-- Small buds -->
+  <circle cx="70" cy="78" r="3" fill="#FFC1CC" opacity="0.7"/>
+  <circle cx="110" cy="75" r="2.5" fill="#FFB7C5" opacity="0.7"/>
+  <circle cx="55" cy="105" r="2.5" fill="#FFB7C5" opacity="0.6"/>
+  <circle cx="135" cy="95" r="2.5" fill="#FFC1CC" opacity="0.6"/>
+  <circle cx="80" cy="60" r="2" fill="#FFC1CC" opacity="0.5"/>
+  <circle cx="120" cy="58" r="2" fill="#FFB7C5" opacity="0.5"/>
+
+  <!-- Leaves -->
+  <ellipse cx="75" cy="130" rx="6" ry="3" transform="rotate(-30 75 130)" fill="#5A8C3C" opacity="0.8"/>
+  <ellipse cx="108" cy="118" rx="6" ry="3" transform="rotate(25 108 118)" fill="#5A8C3C" opacity="0.8"/>
+  <ellipse cx="55" cy="90" rx="5" ry="2.5" transform="rotate(-40 55 90)" fill="#6B9E4A" opacity="0.7"/>
+  <ellipse cx="130" cy="85" rx="5" ry="2.5" transform="rotate(35 130 85)" fill="#6B9E4A" opacity="0.7"/>
+
+  <!-- Falling petals -->
+  <ellipse cx="30" cy="160" rx="3" ry="2" transform="rotate(45 30 160)" fill="#FFB7C5" opacity="0.4"/>
+  <ellipse cx="155" cy="175" rx="2.5" ry="1.8" transform="rotate(-30 155 175)" fill="#FFC1CC" opacity="0.35"/>
+  <ellipse cx="45" cy="195" rx="2" ry="1.5" transform="rotate(60 45 195)" fill="#FFB7C5" opacity="0.3"/>
+</svg>
